@@ -28,31 +28,33 @@ module Scrimmage
         rewardable = event_id_or_reward.to_h
       end
 
-      response = http_client.post(
-                        url("/integrations/rewards"),
-                        json: {
-                          eventId: event_id,
-                          userId: user_id,
-                          dataType: data_type,
-                          body: rewardable
-                        }
-                      )
-
-      # handle errors
-      case response.code
-      when HTTP_NOT_FOUND
-        raise Scrimmage::AccountNotLinkedError, reward&.user_id
-      when HTTP_UNAUTHORIZED, HTTP_FORBIDDEN
-        raise Scrimmage::InvalidPrivateKeyError
-      when ->(code) { !(200..299).include?(code) }
-        raise Scrimmage::RequestFailedError, response
+      response = http_request(
+        :post,
+        url("/integrations/rewards"),
+        json: {
+          eventId: event_id,
+          userId: user_id,
+          dataType: data_type,
+          body: rewardable
+        }
+      ) do |my_response|
+        # handle errors
+        case my_response.code
+        when HTTP_NOT_FOUND
+          raise Scrimmage::AccountNotLinkedError, reward&.user_id
+        when HTTP_UNAUTHORIZED, HTTP_FORBIDDEN
+          raise Scrimmage::InvalidPrivateKeyError
+        when ->(code) { !(200..299).include?(code) }
+          raise Scrimmage::RequestFailedError, response
+        end
       end
 
       parse_data(response)
     end
 
     def get_user_token(user_id, **options)
-      response = http_client.post(
+      response = http_request(
+        :post,
         url("/integrations/users"),
         json: {
           id: user_id,
@@ -72,7 +74,7 @@ module Scrimmage
     #
     def get_service_status(service)
       my_url = url("/system/status", service: service)
-      response = http_client.get(my_url)
+      response = http_request(:get, my_url)
       parse_data(response)
     end
 
@@ -91,8 +93,8 @@ module Scrimmage
 
     def get_rewarder_key_details
       url = url("/rewarders/keys/@me")
-      response = http_client.get(url)
-      raise Scrimmage::Errors::RequestFailedError unless (200..299).include?(response.code)
+      response = http_request(:get, url)
+
       parse_data(response)
     end
 
@@ -102,6 +104,28 @@ module Scrimmage
 
       HTTP.auth("Token #{private_key}")
           .headers("Scrimmage-Namespace" => namespace)
+    end
+
+    #
+    # Initiate an authorized http request
+    #
+    # @param [Symbol] method HTTP method (get, post, etc)
+    # @param [String] uri Full URL of the request (build with #url)
+    # @param [Hash] options Options for the request (e.g. json body)
+    # @param [Proc] &block Block to override default response validation
+    #
+    # @return [HTTP::Response]
+    #
+    private def http_request(method, uri, options = {}, &block)
+      http_client.request(method, uri, options)
+
+      if block
+        block.call(response)
+      else
+        Scrimmage::Errors::RequestFailedError unless (200..299).include?(response.code)
+      end
+
+      response
     end
 
     private def url(path, service: "api")

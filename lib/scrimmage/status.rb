@@ -7,6 +7,11 @@ module Scrimmage
       @client = client
     end
 
+    #
+    # Verify API Service Status
+    #
+    # @return [Hash{verified: Boolean, errors: Array<String>}] A hash object indicating service status
+    #
     def verify
       verified = true
       errors = []
