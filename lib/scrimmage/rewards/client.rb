@@ -9,6 +9,7 @@ module Scrimmage
       HTTP_NOT_FOUND = 404
       HTTP_UNAUTHORIZED = 401
       HTTP_FORBIDDEN = 403
+      SERVICES = %w[api p2e fed nbc].freeze
 
       # Initialize a new client, specifying any local configuration overrides
       def initialize(**config_overrides)
@@ -16,17 +17,12 @@ module Scrimmage
         @config = Scrimmage::Rewards::Config.new(**config_attrs)
       end
 
-      def create_integration_reward(user_id, data_type, event_id_or_reward, _reward = nil)
+      def create_integration_reward(user_id, data_type, event_id_or_reward, reward = nil)
         event_id = event_id_or_reward.is_a?(String) ? event_id_or_reward : nil
         rewardable = event_id_or_reward.is_a?(String) ? rewardable : event_id_or_reward
-        private_key = config.private_key!
-        service_url = config.service_url("api")
-        namespace = config.namespace!
 
-        response = HTTP.auth("Token #{private_key}")
-                       .headers("Scrimmage-Namespace" => namespace)
-                       .post(
-                         "#{service_url}/integrations/rewards",
+        response = http_client.post(
+                         url("/integrations/rewards"),
                          json: {
                            eventId: event_id,
                            userId: user_id,
@@ -38,14 +34,75 @@ module Scrimmage
         # handle errors
         case response.code
         when HTTP_NOT_FOUND
-          raise Scrimmage::Rewards::AccountNotLinkedError, reward.user_id
+          raise Scrimmage::Rewards::AccountNotLinkedError, reward&.user_id
         when HTTP_UNAUTHORIZED, HTTP_FORBIDDEN
           raise Scrimmage::Rewards::InvalidPrivateKeyError
         when ->(code) { !(200..299).include?(code) }
           raise Scrimmage::Rewards::RequestFailedError, response
         end
 
-        JSON.parse(response.body.to_s, object_class: Scrimmage::Rewards::Object)
+        parse_data(response)
+      end
+
+      def get_user_token(user_id, **options)
+        response = http_client.post(
+          url("/integrations/users"),
+          json: {
+            id: user_id,
+            tags: options[:tags].to_a,
+            properties: options[:properties].to_h
+          }
+        )
+        parse_data(response)&.token
+      end
+
+      #
+      # Requests Service Status
+      #
+      # @param [String] service the code for a scrimmage service e.g. ('api', 'p2e', 'fed', 'nbc')
+      #
+      # @return [Scrimmage::Rewards::Object] an object detailing service status
+      #
+      def get_service_status(service)
+        my_url = url("/system/status", service: service)
+        response = http_client.get(my_url)
+        parse_data(response)
+      end
+
+      #
+      # Request overall status for all services
+      #
+      # @return [Boolean] Indicates whether all services are fulfilled
+      #
+      def get_overall_service_status
+        response_data = SERVICES.map do |service|
+          get_service_status(service)
+        end
+
+        response_data.all? { |d| d&.status == "fulfilled" }
+      end
+
+      def get_rewarder_key_details
+        url = url("/rewarders/keys/@me")
+        response = http_client.get(url)
+        parse_data(response)
+      end
+
+      private def http_client
+        private_key = config.private_key!
+        namespace = config.namespace!
+
+        HTTP.auth("Token #{private_key}")
+            .headers("Scrimmage-Namespace" => namespace)
+      end
+
+      private def url(path, service: "api")
+        service_url = config.service_url(service)
+        service_url + path
+      end
+
+      private def parse_data(response)
+        JSON.parse(response.body.to_s, object_class: Scrimmage::Rewards::Object).data
       end
     end
   end
