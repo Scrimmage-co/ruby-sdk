@@ -22,7 +22,7 @@ module Scrimmage
       end
 
       begin
-        key_details_response = client.get_rewarder_key_details
+        client.get_rewarder_key_details
       rescue Scrimmage::Errors::RequestFailedError
         verified = false
         errors << "Rewarder API key is invalid"

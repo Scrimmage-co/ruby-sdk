@@ -43,11 +43,11 @@ module Scrimmage
         # handle errors
         case my_response.code
         when HTTP_NOT_FOUND
-          raise Scrimmage::AccountNotLinkedError, reward&.user_id
+          raise Scrimmage::Errors::AccountNotLinkedError, reward&.user_id
         when HTTP_UNAUTHORIZED, HTTP_FORBIDDEN
-          raise Scrimmage::InvalidPrivateKeyError
+          raise Scrimmage::Errors::InvalidPrivateKeyError
         when ->(code) { !(200..299).include?(code) }
-          raise Scrimmage::RequestFailedError, response
+          raise Scrimmage::Errors::RequestFailedError, response
         end
       end
 

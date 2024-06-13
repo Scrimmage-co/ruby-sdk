@@ -17,7 +17,8 @@ module Scrimmage
     # @return [Array<Scrimmage::Object>]
     #
     def track_rewardable(user_id, data_type, rewards = [])
-      rewards.to_a.map do |reward|
+      rewards = [rewards] unless rewards.is_a? Array
+      rewards.map do |reward|
         client.create_integration_reward(user_id, data_type, reward)
       end
     end

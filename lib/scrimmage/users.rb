@@ -8,7 +8,7 @@ module Scrimmage
     end
 
     def get_user_token(user_id, **options)
-      client.get_user_token(user_id, options)
+      client.get_user_token(user_id, **options)
     end
 
     # delegate class methods to new instance
