@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Scrimmage
   module Errors
     class Base < StandardError; end
@@ -18,7 +20,7 @@ module Scrimmage
 
       def initialize(user_id)
         @user_id = user_id
-        super('Account not linked')
+        super("Account not linked")
       end
     end
 

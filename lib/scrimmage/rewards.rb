@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module Scrimmage
   class Rewards
-
     attr_reader :client
 
     def initialize(client: Scrimmage.default_client)

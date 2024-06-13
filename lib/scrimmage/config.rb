@@ -8,9 +8,8 @@ Scrimmage::Config = Struct.new(
   :retry,
   keyword_init: true
 ) do |klass|
-
   def initialize(**args)
-    super(**args)
+    super
     validate_protocol! if api_server_endpoint
   end
 
@@ -27,10 +26,12 @@ Scrimmage::Config = Struct.new(
     "#{api_server_endpoint}/#{service}"
   end
 
-  private def validate_protocol!
-    protocol_regex = secure ? /^https:\/\/.+/ : /^https?:\/\/.+/
-    unless api_server_endpoint.match?(protocol_regex)
-      raise Scrimmage::Errors::ConfigurationError("Service URL must start with http#{secure ? 's' : ''}://")
-    end
+  private
+
+  def validate_protocol!
+    protocol_regex = secure ? %r{^https://.+} : %r{^https?://.+}
+    return if api_server_endpoint.match?(protocol_regex)
+
+    raise Scrimmage::Errors::ConfigurationError("Service URL must start with http#{secure ? "s" : ""}://")
   end
 end

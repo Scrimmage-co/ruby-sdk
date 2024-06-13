@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "http"
 require "json"
 require "retryable"
@@ -99,7 +101,9 @@ module Scrimmage
       parse_data(response)
     end
 
-    private def http_client
+    private
+
+    def http_client
       private_key = config.private_key!
       namespace = config.namespace!
 
@@ -117,8 +121,8 @@ module Scrimmage
     #
     # @return [HTTP::Response]
     #
-    private def http_request(method, uri, options = {}, &block)
-      request_proc = ->(*args) {
+    def http_request(method, uri, options = {}, &block)
+      request_proc = lambda { |*_args|
         response = http_client.request(method, uri, options)
 
         if block
@@ -136,12 +140,12 @@ module Scrimmage
       end
     end
 
-    private def url(path, service: "api")
+    def url(path, service: "api")
       service_url = config.service_url(service)
       service_url + path
     end
 
-    private def parse_data(response)
+    def parse_data(response)
       JSON.parse(response.body.to_s, object_class: Scrimmage::Object)
     end
   end

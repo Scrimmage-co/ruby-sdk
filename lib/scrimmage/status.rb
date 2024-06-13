@@ -1,6 +1,7 @@
+# frozen_string_literal: true
+
 module Scrimmage
   class Status
-
     attr_reader :client
 
     def initialize(client: Scrimmage.default_client)
@@ -27,7 +28,7 @@ module Scrimmage
         verified = false
         errors << "Rewarder API key is invalid"
       end
-      {verified: verified, errors: errors}
+      { verified: verified, errors: errors }
     end
 
     # delegate class methods to new instance
