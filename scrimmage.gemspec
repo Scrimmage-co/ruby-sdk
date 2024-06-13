@@ -1,23 +1,23 @@
 # frozen_string_literal: true
 
-require_relative "lib/scrimmage/rewards/version"
+require_relative "lib/scrimmage/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "scrimmage-rewards"
-  spec.version = Scrimmage::Rewards::VERSION
+  spec.name = "scrimmage"
+  spec.version = Scrimmage::VERSION
   spec.authors = ["Rafe Rosen"]
   spec.email = ["rafe@existentialmutt.com"]
 
   spec.summary = "Ruby SDK for the Scrimmage Rewards API"
-  spec.homepage = "https://github.com/scrimmage-co/rewards-ruby"
+  spec.homepage = "https://github.com/scrimmage-co/scrimmage-ruby"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0.0"
 
   # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
   spec.metadata["homepage_uri"] = spec.homepage
-  spec.metadata["source_code_uri"] = "https://github.com/scrimmage-co/rewards-ruby"
-  spec.metadata["changelog_uri"] = "https://github.com/scrimmage-co/rewards-ruby/CHANGELOG.md"
+  spec.metadata["source_code_uri"] = "https://github.com/scrimmage-co/scrimmage-ruby"
+  spec.metadata["changelog_uri"] = "https://github.com/scrimmage-co/scrimmage-ruby/CHANGELOG.md"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    scrimmage-rewards (0.1.0)
+    scrimmage (0.1.0)
       http (~> 5.2)
 
 GEM
@@ -68,7 +68,7 @@ DEPENDENCIES
   minitest (~> 5.23)
   rake (~> 13.0)
   rubocop (~> 1.64)
-  scrimmage-rewards!
+  scrimmage!
 
 BUNDLED WITH
    2.5.7

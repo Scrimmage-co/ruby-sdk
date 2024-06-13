@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in scrimmage-rewards.gemspec
+# Specify your gem's dependencies in scrimmage.gemspec
 gemspec
 
 gem "rake", "~> 13.0"
