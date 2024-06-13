@@ -2,7 +2,7 @@ module Scrimmage
   module Errors
     class Base < StandardError; end
 
-    class ConfigurationError < Base
+    class ConfigurationError < Base; end
 
     class MissingConfigurationError < ConfigurationError
       attr_reader :config_key

@@ -11,7 +11,7 @@ Scrimmage::Config = Struct.new(
 
   def initialize(**args)
     super(**args)
-    validate_protocol!
+    validate_protocol! if api_server_endpoint
   end
 
   # define e.g. private_key! to fetch struct member or raise an error

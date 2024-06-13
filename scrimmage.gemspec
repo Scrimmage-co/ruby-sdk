@@ -34,9 +34,10 @@ Gem::Specification.new do |spec|
 
   # Runtime dependencies
   spec.add_dependency "http", "~> 5.2"
-  spec.add_dependency 'retryable', '~> 3.0', '>= 3.0.5'
+  spec.add_dependency "retryable", "~> 3.0.5"
 
   # Development dependencies
+  spec.add_development_dependency "dotenv", "~> 3.1.2"
   spec.add_development_dependency "minitest", "~> 5.23.1"
   spec.add_development_dependency "rake", "~> 13.2.1"
   spec.add_development_dependency "rubocop", "~> 1.64.1"

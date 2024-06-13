@@ -1,5 +1,6 @@
 require "http"
 require "json"
+require "retryable"
 
 module Scrimmage
   class Client
@@ -88,8 +89,7 @@ module Scrimmage
       response_data = SERVICES.map do |service|
         get_service_status(service)
       end
-
-      response_data.all? { |d| d&.status == "fulfilled" }
+      response_data.all? { |d| d&.uptime&.positive? }
     end
 
     def get_rewarder_key_details
@@ -118,13 +118,15 @@ module Scrimmage
     # @return [HTTP::Response]
     #
     private def http_request(method, uri, options = {}, &block)
-      request_proc = -> {
-        http_client.request(method, uri, options)
+      request_proc = ->(*args) {
+        response = http_client.request(method, uri, options)
+
         if block
           block.call(response)
         else
           Scrimmage::Errors::RequestFailedError unless (200..299).include?(response.code)
         end
+        response
       }
 
       if config.retry
@@ -140,7 +142,7 @@ module Scrimmage
     end
 
     private def parse_data(response)
-      JSON.parse(response.body.to_s, object_class: Scrimmage::Object).data
+      JSON.parse(response.body.to_s, object_class: Scrimmage::Object)
     end
   end
 end
