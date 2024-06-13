@@ -5,6 +5,7 @@ Scrimmage::Config = Struct.new(
   :private_key,
   :namespace,
   :secure,
+  :retry,
   keyword_init: true
 ) do |klass|
 

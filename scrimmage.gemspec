@@ -32,8 +32,14 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  # Uncomment to register a new dependency of your gem
+  # Runtime dependencies
   spec.add_dependency "http", "~> 5.2"
+  spec.add_dependency 'retryable', '~> 3.0', '>= 3.0.5'
+
+  # Development dependencies
+  spec.add_development_dependency "minitest", "~> 5.23.1"
+  spec.add_development_dependency "rake", "~> 13.2.1"
+  spec.add_development_dependency "rubocop", "~> 1.64.1"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

@@ -14,6 +14,7 @@ module Scrimmage
     def initialize(**config_overrides)
       config_attrs = Scrimmage.config.to_h.merge(config_overrides)
       @config = Scrimmage::Config.new(**config_attrs)
+
       @rewards = Scrimmage::Rewards.new(client: self)
       @users = Scrimmage::Users.new(client: self)
       @status = Scrimmage::Status.new(client: self)
@@ -117,15 +118,20 @@ module Scrimmage
     # @return [HTTP::Response]
     #
     private def http_request(method, uri, options = {}, &block)
-      http_client.request(method, uri, options)
+      request_proc = -> {
+        http_client.request(method, uri, options)
+        if block
+          block.call(response)
+        else
+          Scrimmage::Errors::RequestFailedError unless (200..299).include?(response.code)
+        end
+      }
 
-      if block
-        block.call(response)
+      if config.retry
+        Retryable.retryable(tries: config.retry[:tries], sleep: config.retry[:sleep], &request_proc)
       else
-        Scrimmage::Errors::RequestFailedError unless (200..299).include?(response.code)
+        request_proc.call
       end
-
-      response
     end
 
     private def url(path, service: "api")
