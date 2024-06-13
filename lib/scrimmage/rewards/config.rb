@@ -1,21 +1,16 @@
-module Scrimmage
-  module Rewards
-    class Config < Struct.new(
-      keyword_init: true
-    ); end
+# frozen_string_literal: true
 
-    @config = Config.new()
+Scrimmage::Rewards::Config = Struct.new(:api_server_endpoint, :private_key, :namespace, keyword_init: true) do |klass|
+  # define e.g. private_key! to fetch struct member or raise an error
+  klass.members.each do |member_key|
+    define_method "#{member_key}!" do
+      raise Scrimmage::Rewards::Errors::MissingConfigurationError(member_key) unless send(member_key)
 
-    module_function def configure
-      yield @config
+      send(member_key)
     end
+  end
 
-    module_function def config
-      if block_given?
-        yield @config
-      else
-        @config
-      end
-    end
+  def service_url(service)
+    "#{api_server_endpoint}/#{service}"
   end
 end
