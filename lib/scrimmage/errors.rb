@@ -2,7 +2,9 @@ module Scrimmage
   module Errors
     class Base < StandardError; end
 
-    class MissingConfigurationError
+    class ConfigurationError < Base
+
+    class MissingConfigurationError < ConfigurationError
       attr_reader :config_key
 
       def initialize(config_key)

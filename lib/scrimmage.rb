@@ -20,6 +20,6 @@ module Scrimmage
   end
 
   module_function def default_client
-    @default_client ||= Scrimmage::Client.new
+    @default_client ||= Scrimmage::Client.new(secure: true)
   end
 end
