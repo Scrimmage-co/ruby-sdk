@@ -2,6 +2,8 @@
 
 require_relative "rewards/version"
 
+Dir[File.join(__dir__, 'rewards', '*.rb')].each { |file| require file }
+
 module Scrimmage
   module Rewards
     class Error < StandardError; end
