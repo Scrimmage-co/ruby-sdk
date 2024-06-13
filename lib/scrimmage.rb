@@ -18,4 +18,8 @@ module Scrimmage
       @config
     end
   end
+
+  module_function def default_client
+    @default_client ||= Scrimmage::Client.new
+  end
 end

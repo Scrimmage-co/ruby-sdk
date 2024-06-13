@@ -3,7 +3,7 @@ require "json"
 
 module Scrimmage
   class Client
-    attr_reader :config
+    attr_reader :config, :rewards, :users, :status
 
     HTTP_NOT_FOUND = 404
     HTTP_UNAUTHORIZED = 401
@@ -14,11 +14,19 @@ module Scrimmage
     def initialize(**config_overrides)
       config_attrs = Scrimmage.config.to_h.merge(config_overrides)
       @config = Scrimmage::Config.new(**config_attrs)
+      @rewards = Scrimmage::Rewards.new(client: self)
+      @users = Scrimmage::Users.new(client: self)
+      @status = Scrimmage::Status.new(client: self)
     end
 
     def create_integration_reward(user_id, data_type, event_id_or_reward, reward = nil)
-      event_id = event_id_or_reward.is_a?(String) ? event_id_or_reward : nil
-      rewardable = event_id_or_reward.is_a?(String) ? rewardable : event_id_or_reward
+      if event_id_or_reward.is_a? String
+        event_id = event_id_or_reward
+        rewardable = reward.to_h
+      else
+        event_id = nil
+        rewardable = event_id_or_reward.to_h
+      end
 
       response = http_client.post(
                         url("/integrations/rewards"),
@@ -84,6 +92,7 @@ module Scrimmage
     def get_rewarder_key_details
       url = url("/rewarders/keys/@me")
       response = http_client.get(url)
+      raise Scrimmage::Errors::RequestFailedError unless (200..299).include?(response.code)
       parse_data(response)
     end
 
