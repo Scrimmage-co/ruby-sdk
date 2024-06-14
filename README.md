@@ -37,49 +37,49 @@ end
 ```
 
 3.  Use the library
-    ```ruby
-    Scrimmage::Rewards.track_rewardable(
-      'unique-user-id',
-      'Data Type Name',
-      {
-        'custom-property': 'custom-value',
-        'custom-property-2': {
-          'custom-property-2-1': 'custom-value-2-1',
-        },
-      },
-    )
-    ```
+```ruby
+Scrimmage::Rewards.track_rewardable(
+  'unique-user-id',
+  'Data Type Name',
+  {
+    'custom-property': 'custom-value',
+    'custom-property-2': {
+      'custom-property-2-1': 'custom-value-2-1',
+    },
+  },
+)
+```
 
-   For one-time events you can use `track_rewardable_once` method. Make sure to use unique event id.
+For one-time events you can use `track_rewardable_once` method. Make sure to use unique event id.
 
-   ```ruby
-    Scrimmage::Rewards.track_rewardable_once(
-      'unique-user-id',
-      'Data Type Name',
-      'unique-event-id',
-      {
-         'custom-property': 'custom-value',
-         'custom-property-2': {
-             'custom-property-2-1': 'custom-value-2-1',
-         },
-      },
-    );
-    ```
+```ruby
+Scrimmage::Rewards.track_rewardable_once(
+  'unique-user-id',
+  'Data Type Name',
+  'unique-event-id',
+  {
+     'custom-property': 'custom-value',
+     'custom-property-2': {
+         'custom-property-2-1': 'custom-value-2-1',
+     },
+  },
+);
+```
 
 4. Get user token
-   ```ruby
-   token = Scrimmage::Users.get_user_token('unique-user-id')
-   ```
-   or
-   ```ruby
-   token = Scrimmage::Users.get_user_token('unique-user-id',
-     tags: ['tag1', 'tag2'],
-     properties: {
-       'custom-property': 'custom-value',
-       'custom-property-2': 12345,
-     },
-   )
-   ```
+```ruby
+token = Scrimmage::Users.get_user_token('unique-user-id')
+```
+or
+```ruby
+token = Scrimmage::Users.get_user_token('unique-user-id',
+ tags: ['tag1', 'tag2'],
+ properties: {
+   'custom-property': 'custom-value',
+   'custom-property-2': 12345,
+ },
+)
+```
 
   Use this token to identify the user on the frontend. Make sure to deliver the token to the frontend securely.
 
