@@ -126,6 +126,19 @@ rewarder_for_staging.rewards.track_rewardable(
 );
 ```
 
+## Configuration
+
+The following configuration parameters can be passed to `Scrimmage.configure` or `Scrimmage::Client.new`
+
+- `api_server_endpoint` the URL of your API server
+- `private_key` your private key
+- `namespace` your environment (e.g. staging or production)
+- `secure` set to `true` when using an https url for `api_server_endpoint` and false when using plain http (default `true`)
+- `retry` set to `false` to skip retrying failed requests or pass a hash with the following keys to configure retry behavior:
+  - `tries` max number of retries (default 3)
+  - `sleep_base` the number of seconds for the initial retry.  Subsequent retries will delay with exponential backoff.  Pass a decimal for fractional seconds (default `0.1`)
+  - `sleep` a fixed number of seconds between retries or a proc that determines the delay based on the number of previous tries.  (default `->(n) { config.retry[:sleep_base] * (2**n) }`)
+
 ## Usage on other platforms
 
 - Using `<iframe />`: [github.com/Scrimmage-co/scrimmage-rewards-iframe](https://github.com/Scrimmage-co/scrimmage-rewards-iframe)
